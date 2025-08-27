@@ -1,0 +1,52 @@
+name: "CodeQL (Android/Kotlin)"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      # Cài Android SDK + accept licenses
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Accept Android licenses
+        run: yes | sdkmanager --licenses
+
+      # (Tùy dự án) cài platform & build-tools cần thiết
+      - name: Install platforms & build-tools
+        run: |
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+          queries: ./codeql-queries  # hoặc ./codeql-queries/custom.qls
+
+      # Build module app (assembleDebug/assembleRelease tuỳ dự án)
+      - name: Build :app
+        run: ./gradlew :app:assembleDebug --no-daemon
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:java"
