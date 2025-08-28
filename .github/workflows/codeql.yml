@@ -57,10 +57,16 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: java-kotlin
-          queries: ./codeql-queries
-          # Use autobuild instead of manual mode
-          build-mode: autobuild
-
+          queries: |
+            security-extended
+            security-and-quality
+            ./codeql-queries
+          # You can also specify additional query packs
+          packs: |
+            codeql/java-queries:codeql-suites/java-security-extended.qls
+            codeql/java-queries:codeql-suites/java-code-quality.qls
+            codeql/java-queries:codeql-suites/java-best-practices.qls
+            # Add more packs as needed
       # Clean before building to ensure all files are recompiled
       - name: Clean project
         run: ./gradlew clean --no-daemon
