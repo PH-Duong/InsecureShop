@@ -34,19 +34,20 @@ jobs:
 
       - name: Install platforms & build-tools
         run: |
-          sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+          sdkmanager "platform-tools" "platforms;android-29" "build-tools;29.0.2"
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
-
-      - name: Build with Gradle
-        run: ./gradlew :app:assembleDebug --no-daemon
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: java-kotlin
           queries: ./codeql-queries
+          build-mode: manual  # Enables manual build tracing
+
+      - name: Build with Gradle
+        run: ./gradlew :app:assembleDebug --no-daemon
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
