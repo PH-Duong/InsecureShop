@@ -30,8 +30,10 @@ jobs:
           mkdir -p $HOME/android-sdk/cmdline-tools
           cd $HOME/android-sdk/cmdline-tools
           curl -s https://dl.google.com/android/repository/commandlinetools-linux-12266719_latest.zip -o tools.zip
-          unzip -q tools.zip -d $HOME/android-sdk/cmdline-tools
+          unzip -q tools.zip
           rm tools.zip
+          # Debug: show extracted structure
+          ls -R $HOME/android-sdk/cmdline-tools
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
           echo "$HOME/android-sdk/cmdline-tools/cmdline-tools/bin" >> $GITHUB_PATH
@@ -39,7 +41,7 @@ jobs:
 
       - name: Verify sdkmanager
         run: sdkmanager --version
-        
+
       - name: Accept Android licenses
         run: yes | sdkmanager --licenses
 
