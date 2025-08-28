@@ -18,45 +18,37 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-
-      # Cài Android SDK Commandline tools
-      - name: Install Android SDK manually
-        run: |
-          mkdir -p $HOME/android-sdk/cmdline-tools
-          cd $HOME/android-sdk/cmdline-tools
-          curl -s https://dl.google.com/android/repository/commandlinetools-linux-12266719_latest.zip -o tools.zip
-          unzip -q tools.zip
-          rm tools.zip
-          # Debug: show extracted structure
-          ls -R $HOME/android-sdk/cmdline-tools
-          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "$HOME/android-sdk/cmdline-tools/cmdline-tools/bin" >> $GITHUB_PATH
-          echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
-
-      - name: Verify sdkmanager
-        run: sdkmanager --version
+      # Cài Android SDK
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Accept Android licenses
         run: yes | sdkmanager --licenses
 
+      # Cài platform & build-tools (chỉnh version nếu dự án cần khác)
       - name: Install platforms & build-tools
         run: |
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
+      # JDK 11 cho Gradle build (vì Groovy cũ không chạy được trên 17)
+      - name: Setup JDK 11 for Gradle build
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "11"
+
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Upgrade Gradle wrapper
-        run: ./gradlew wrapper --gradle-version 7.6.4 --distribution-type all
-
       - name: Build with Gradle
         run: ./gradlew :app:assembleDebug --no-daemon
+
+      # Sau build xong → chuyển sang JDK 17 cho CodeQL
+      - name: Setup JDK 17 for CodeQL
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
