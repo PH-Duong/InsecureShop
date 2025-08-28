@@ -19,21 +19,32 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup JDK 17
+        id: setup-java-17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
 
+      - name: Setup JDK 11
+        id: setup-java-11
+        uses: actions/setup-java@v4  
+        with:
+          distribution: temurin
+          java-version: "11"
+
       - name: Install Android SDK
         uses: android-actions/setup-android@v3
         with:
-          cmdline-tools-version: 9.0
+          cmdline-tools-version: 10.0
 
       - name: Accept Android licenses
-        run: yes | sdkmanager --licenses
+        run: |
+          export JAVA_HOME="${{ steps.setup-java-17.outputs.path }}"
+          yes | sdkmanager --licenses
 
       - name: Install platforms & build-tools
         run: |
+          export JAVA_HOME="${{ steps.setup-java-17.outputs.path }}"
           sdkmanager "platform-tools" "platforms;android-29" "build-tools;29.0.2"
 
       - name: Make gradlew executable
