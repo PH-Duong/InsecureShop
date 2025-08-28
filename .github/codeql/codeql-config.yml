@@ -1,7 +1,7 @@
 name: "My CodeQL Config"
 queries:
   - uses: security-extended
-  - uses: ./codeql-queries/custom.qls
+  - uses: ./codeql-queries/
 paths:
   - app/
 paths-ignore:
