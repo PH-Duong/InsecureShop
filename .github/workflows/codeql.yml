@@ -49,7 +49,7 @@ jobs:
 
       # 5. Build với Gradle 5.6.4 (dùng JDK 11)
       - name: Build with Gradle
-        run: ./gradlew :app:assembleDebug --no-daemon
+        run: ./gradlew :app:assembleDebug --no-daemon --stacktrace
 
       # 6. Init CodeQL
       - name: Initialize CodeQL
