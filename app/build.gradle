@@ -8,12 +8,15 @@ android {
 
     defaultConfig {
         applicationId "com.insecureshop"
-        minSdkVersion 18  // Updated from 16 to 18
+        minSdkVersion 18  // Updated from 16 to 18 as needed for the upload service
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // Add this multiDexEnabled true line
+        multiDexEnabled true
     }
 
     dataBinding {
@@ -27,10 +30,23 @@ android {
         }
     }
 
-    // Add this compileOptions block to ensure Java 8 compatibility
+    // Ensure Java 8 compatibility
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // Add this to prevent conflicts
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/*.kotlin_module'
     }
 }
 
@@ -47,11 +63,15 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'com.google.code.gson:gson:2.8.6'
+    
+    // Keep the GitHub version of the upload service
     implementation 'com.github.gotev:android-upload-service:3.5.2'
     
-    // JAXB dependencies we added in the previous step
+    // Add multidex support
+    implementation 'androidx.multidex:multidex:2.0.1'
+    
+    // Use a different approach for JAXB dependencies
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
-    implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
-    implementation 'com.sun.xml.bind:jaxb-impl:2.3.2'
-    implementation 'javax.activation:activation:1.1.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+    implementation 'javax.activation:javax.activation-api:1.2.0'
 }
