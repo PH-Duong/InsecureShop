@@ -40,7 +40,7 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: java
-          queries: ./codeql-queries  # hoặc ./codeql-queries/custom.qls
+          config-file: ./.github/codeql/codeql-config.yml
 
       # Build module app (assembleDebug/assembleRelease tuỳ dự án)
       - name: Build :app

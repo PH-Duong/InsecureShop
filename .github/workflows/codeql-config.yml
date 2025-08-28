@@ -1,0 +1,9 @@
+name: "My CodeQL Config"
+queries:
+  - uses: security-extended
+  - uses: ./codeql-queries/custom.qls
+paths:
+  - app/
+paths-ignore:
+  - gradle/
+  - build/
