@@ -1,63 +1,40 @@
-name: "CodeQL (Android/Kotlin)"
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
 jobs:
   analyze:
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Dùng JDK 17 cho Android SDK, Gradle, CodeQL
       - name: Setup JDK 17
-        id: setup-java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
 
-      # Force sdkmanager dùng JDK 17 thay vì JDK 11 mặc định
-      - name: Export JAVA_HOME
+      - name: Install Android SDK manually
         run: |
-          echo "JAVA_HOME=${{ steps.setup-java.outputs.path }}" >> $GITHUB_ENV
-          echo "${{ steps.setup-java.outputs.path }}/bin" >> $GITHUB_PATH
-          java -version
-
-      # Cài Android SDK
-      - name: Install Android SDK
-        uses: android-actions/setup-android@v3
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          cd $HOME/android-sdk/cmdline-tools
+          curl -s https://dl.google.com/android/repository/commandlinetools-linux-12266719_latest.zip -o tools.zip
+          unzip -q tools.zip
+          rm tools.zip
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "$HOME/android-sdk/cmdline-tools/bin" >> $GITHUB_PATH
+          echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
 
       - name: Accept Android licenses
         run: yes | sdkmanager --licenses
 
-      # Cài platform & build-tools
       - name: Install platforms & build-tools
         run: |
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      # Nâng cấp Gradle wrapper lên 7.6.4
-      - name: Upgrade Gradle wrapper
-        run: |
-          curl -s https://services.gradle.org/distributions/gradle-7.6.4-all.zip -o gradle-7.6.4-all.zip
-          unzip -q gradle-7.6.4-all.zip -d $HOME/gradle-7.6.4
-          export PATH=$HOME/gradle-7.6.4/gradle-7.6.4/bin:$PATH
-          gradle wrapper --gradle-version 7.6.4 --distribution-type all
-
-      # Cho phép gradlew chạy
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Build app để CodeQL có classpath
+      - name: Upgrade Gradle wrapper
+        run: ./gradlew wrapper --gradle-version 7.6.4 --distribution-type all
+
       - name: Build with Gradle
         run: ./gradlew :app:assembleDebug --no-daemon
 
