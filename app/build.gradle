@@ -2,13 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-// Add repositories section
-repositories {
-    google()
-    mavenCentral()
-    jcenter() // Needed for net.gotev:uploadservice:3.2.3
-}
-
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -48,5 +41,8 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'net.gotev:uploadservice:3.2.3'
+    
+    // Replace the problematic dependency with a newer version
+    implementation 'net.gotev:uploadservice:4.5.0'
+    // Alternatively, you can use: implementation 'net.gotev:uploadservice:3.5.2'
 }
