@@ -36,6 +36,10 @@ jobs:
         run: |
           sdkmanager "platform-tools" "platforms;android-29" "build-tools;29.0.2"
 
+      - name: Install system images & extras
+        run: |
+          sdkmanager "system-images;android-29;default;x86_64" "extras;android;m2repository"
+          
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
