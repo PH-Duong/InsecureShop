@@ -1,0 +1,16 @@
+# Build artifacts
+.gradle/
+build/
+*/build/
+.idea/
+*.iml
+local.properties
+
+# Android artifacts
+*.apk
+*.aab
+*.aar
+
+# Temporary files
+*.tmp
+*.temp
