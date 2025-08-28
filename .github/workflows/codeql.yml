@@ -25,10 +25,17 @@ jobs:
           java-version: "11"
 
       - name: Install Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v2
         with:
           cmdline-tools-version: 11.0
 
+      - name: Setup Android SDK
+        run: |
+          wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip
+          unzip commandlinetools-linux-10406996_latest.zip
+          mkdir -p $ANDROID_HOME/cmdline-tools
+          mv cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+          
       - name: Accept Android licenses
         run: yes | sdkmanager --licenses
 
