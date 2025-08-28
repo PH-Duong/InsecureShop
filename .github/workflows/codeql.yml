@@ -18,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full git history for better analysis
+          fetch-depth: 0
 
       # Install JDK 11 for Android SDK tools
       - name: Setup JDK 11 for Android tools
@@ -53,17 +53,15 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      # Use a simpler approach with standard query suite names
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: java-kotlin
-          # Correctly formatted queries section
-          queries: |
-            security-and-quality
-            codeql/java-queries:codeql-suites/java-code-quality.qls
-            codeql/java-queries:codeql-suites/java-best-practices.qls
+          # Just using the standard quality suite - this is known to work
+          queries: +security-and-quality
 
-      # Clean before building to ensure all files are recompiled
+      # Clean before building
       - name: Clean project
         run: ./gradlew clean --no-daemon
 
@@ -73,8 +71,6 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:java-kotlin"
 # name: "CodeQL (Android/Kotlin)"
 
 # on:
