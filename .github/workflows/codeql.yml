@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full git history for better analysis
 
       # Install JDK 11 for Android SDK tools
       - name: Setup JDK 11 for Android tools
@@ -56,10 +58,91 @@ jobs:
         with:
           languages: java-kotlin
           queries: ./codeql-queries
-          build-mode: manual
+          # Use autobuild instead of manual mode
+          build-mode: autobuild
 
+      # Clean before building to ensure all files are recompiled
+      - name: Clean project
+        run: ./gradlew clean --no-daemon
+
+      # We'll still run our own build even with autobuild enabled
       - name: Build with Gradle
         run: ./gradlew :app:assembleDebug --no-daemon
 
+      # Add debug info about which files CodeQL is scanning
+      - name: Debug - List source files
+        run: |
+          echo "Listing Java/Kotlin source files:"
+          find app/src/main/java -type f -name "*.java" -o -name "*.kt" | sort
+
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:java-kotlin"
+          upload: true
+
+# name: "CodeQL (Android/Kotlin)"
+
+# on:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+
+# jobs:
+#   analyze:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       actions: read
+#       contents: read
+#       security-events: write
+
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+
+#       # Install JDK 11 for Android SDK tools
+#       - name: Setup JDK 11 for Android tools
+#         uses: actions/setup-java@v4
+#         with:
+#           distribution: temurin
+#           java-version: "11"
+
+#       - name: Install Android SDK
+#         uses: android-actions/setup-android@v3
+#         with:
+#           cmdline-tools-version: 9862592
+
+#       - name: Accept Android licenses
+#         run: yes | sdkmanager --licenses
+
+#       - name: Install platforms & build-tools
+#         run: |
+#           sdkmanager "platform-tools" "platforms;android-29" "build-tools;29.0.2"
+
+#       - name: Install system images & extras
+#         run: |
+#           sdkmanager "system-images;android-29;default;x86_64" "extras;android;m2repository"
+          
+#       # Switch to JDK 8 for the build
+#       - name: Setup JDK 8 for build
+#         uses: actions/setup-java@v4
+#         with:
+#           distribution: temurin
+#           java-version: "8"
+          
+#       - name: Make gradlew executable
+#         run: chmod +x ./gradlew
+
+#       - name: Initialize CodeQL
+#         uses: github/codeql-action/init@v3
+#         with:
+#           languages: java-kotlin
+#           queries: ./codeql-queries
+#           build-mode: manual
+
+#       - name: Build with Gradle
+#         run: ./gradlew :app:assembleDebug --no-daemon
+
+#       - name: Perform CodeQL Analysis
+#         uses: github/codeql-action/analyze@v3
