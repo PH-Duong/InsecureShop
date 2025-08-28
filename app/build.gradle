@@ -42,7 +42,4 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'com.google.code.gson:gson:2.8.6'
     
-    // Replace the problematic dependency with a newer version
-    implementation 'net.gotev:uploadservice:4.5.0'
-    // Alternatively, you can use: implementation 'net.gotev:uploadservice:3.5.2'
 }
