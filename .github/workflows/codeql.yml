@@ -32,6 +32,12 @@ jobs:
       - name: Accept Android licenses
         run: yes | sdkmanager --licenses
 
+      - name: Setup JDK 11 (for Gradle build)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "11"
+
       # Cài platform & build-tools (chỉnh version nếu dự án cần khác)
       - name: Install platforms & build-tools
         run: |
