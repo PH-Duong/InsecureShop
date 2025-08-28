@@ -18,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # JDK 17 cho Android SDK
+      # Dùng JDK 17 cho Android SDK, Gradle, CodeQL
       - name: Setup JDK 17
         uses: actions/setup-java@v4
         with:
@@ -37,17 +37,19 @@ jobs:
         run: |
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      # Bây giờ mới quay về JDK 11 cho Gradle build
-      - name: Setup JDK 11 (for Gradle build)
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "11"
+      # Nâng cấp Gradle wrapper lên 7.6.4
+      - name: Upgrade Gradle wrapper
+        run: |
+          curl -s https://services.gradle.org/distributions/gradle-7.6.4-all.zip -o gradle-7.6.4-all.zip
+          unzip -q gradle-7.6.4-all.zip -d $HOME/gradle-7.6.4
+          export PATH=$HOME/gradle-7.6.4/gradle-7.6.4/bin:$PATH
+          gradle wrapper --gradle-version 7.6.4 --distribution-type all
 
+      # Cho phép gradlew chạy
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Build app bằng Gradle
+      # Build app để CodeQL có classpath
       - name: Build with Gradle
         run: ./gradlew :app:assembleDebug --no-daemon
 
