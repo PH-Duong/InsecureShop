@@ -18,35 +18,35 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup JDK 8
+      # Install JDK 11 for Android SDK tools
+      - name: Setup JDK 11 for Android tools
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "11"
+
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          cmdline-tools-version: 9862592
+
+      - name: Accept Android licenses
+        run: yes | sdkmanager --licenses
+
+      - name: Install platforms & build-tools
+        run: |
+          sdkmanager "platform-tools" "platforms;android-29" "build-tools;29.0.2"
+
+      - name: Install system images & extras
+        run: |
+          sdkmanager "system-images;android-29;default;x86_64" "extras;android;m2repository"
+          
+      # Switch to JDK 8 for the build
+      - name: Setup JDK 8 for build
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "8"
-
-      # Use a different approach for Android SDK setup
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2  # Use v2 instead of v3
-        
-      # Alternative manual setup if needed
-      - name: Install older Android command-line tools
-        run: |
-          wget https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip -O cmdline-tools.zip
-          mkdir -p ${ANDROID_HOME}/cmdline-tools
-          unzip -q cmdline-tools.zip -d ${ANDROID_HOME}/cmdline-tools
-          mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest
-          export PATH=${ANDROID_HOME}/cmdline-tools/latest/bin:${PATH}
-          
-      - name: Accept Android licenses
-        run: yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
-
-      - name: Install platforms & build-tools
-        run: |
-          sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools" "platforms;android-29" "build-tools;29.0.2"
-
-      - name: Install system images & extras
-        run: |
-          sdkmanager --sdk_root=${ANDROID_HOME} "system-images;android-29;default;x86_64" "extras;android;m2repository"
           
       - name: Make gradlew executable
         run: chmod +x ./gradlew
