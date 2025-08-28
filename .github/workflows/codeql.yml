@@ -18,26 +18,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 1. Dùng JDK 17 cho Android SDK tools
+      # JDK 17 cho Android SDK
       - name: Setup JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
 
-      # 2. Cài Android SDK
+      # Cài Android SDK
       - name: Install Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Accept Android licenses
         run: yes | sdkmanager --licenses
 
-      # 3. Cài platform & build-tools (dùng JDK 17 ở đây luôn)
+      # Cài platform & build-tools
       - name: Install platforms & build-tools
         run: |
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      # 4. Sau khi SDK đã ok, switch về JDK 11 để build Gradle 5.6.4
+      # Bây giờ mới quay về JDK 11 cho Gradle build
       - name: Setup JDK 11 (for Gradle build)
         uses: actions/setup-java@v4
         with:
@@ -47,11 +47,10 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # 5. Build với Gradle 5.6.4 (dùng JDK 11)
+      # Build app bằng Gradle
       - name: Build with Gradle
-        run: ./gradlew :app:assembleDebug --no-daemon --stacktrace
+        run: ./gradlew :app:assembleDebug --no-daemon
 
-      # 6. Init CodeQL
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
