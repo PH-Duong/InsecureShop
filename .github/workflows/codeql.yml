@@ -37,6 +37,9 @@ jobs:
         run: |
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       # Build Gradle để CodeQL có classpath
       - name: Build with Gradle
         run: ./gradlew :app:assembleDebug --no-daemon
