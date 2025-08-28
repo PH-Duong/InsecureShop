@@ -20,10 +20,18 @@ jobs:
 
       # Dùng JDK 17 cho Android SDK, Gradle, CodeQL
       - name: Setup JDK 17
+        id: setup-java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
+
+      # Force sdkmanager dùng JDK 17 thay vì JDK 11 mặc định
+      - name: Export JAVA_HOME
+        run: |
+          echo "JAVA_HOME=${{ steps.setup-java.outputs.path }}" >> $GITHUB_ENV
+          echo "${{ steps.setup-java.outputs.path }}/bin" >> $GITHUB_PATH
+          java -version
 
       # Cài Android SDK
       - name: Install Android SDK
